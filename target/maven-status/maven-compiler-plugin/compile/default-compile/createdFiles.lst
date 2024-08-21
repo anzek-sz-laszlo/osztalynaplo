@@ -1,0 +1,11 @@
+hu\anzek\backend\osztalynaplo\service\DiakService.class
+hu\anzek\backend\osztalynaplo\OsztalyNaplo.class
+hu\anzek\backend\osztalynaplo\model\DiakOsztalyzat.class
+hu\anzek\backend\osztalynaplo\model\Diakfelvetel.class
+hu\anzek\backend\osztalynaplo\model\Diak.class
+hu\anzek\backend\osztalynaplo\diaknevsor\DiakNevsor.class
+hu\anzek\backend\osztalynaplo\repository\JegyRepository.class
+hu\anzek\backend\osztalynaplo\repository\DiakRepository.class
+hu\anzek\backend\osztalynaplo\controller\DiakController.class
+hu\anzek\backend\osztalynaplo\model\Jegy.class
+hu\anzek\backend\osztalynaplo\model\JegyDto.class

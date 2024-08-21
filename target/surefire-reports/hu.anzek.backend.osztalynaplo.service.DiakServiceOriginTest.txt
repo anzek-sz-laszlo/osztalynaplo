@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: hu.anzek.backend.osztalynaplo.service.DiakServiceOriginTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.260 s -- in hu.anzek.backend.osztalynaplo.service.DiakServiceOriginTest
