@@ -9,3 +9,4 @@ hu\anzek\backend\osztalynaplo\repository\DiakRepository.class
 hu\anzek\backend\osztalynaplo\controller\DiakController.class
 hu\anzek\backend\osztalynaplo\model\Jegy.class
 hu\anzek\backend\osztalynaplo\model\JegyDto.class
+hu\anzek\backend\osztalynaplo\mapper\DiakMapper.class

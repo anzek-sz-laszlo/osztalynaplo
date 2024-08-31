@@ -12,6 +12,7 @@ import hu.anzek.backend.osztalynaplo.model.Jegy;
 import hu.anzek.backend.osztalynaplo.model.JegyDto;
 import hu.anzek.backend.osztalynaplo.repository.DiakRepository;
 import hu.anzek.backend.osztalynaplo.repository.JegyRepository;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DiakService {
 
+    private final int TARGY_EV = LocalDate.now().getYear();
+    
     private final DiakRepository diakRepository;
     private final JegyRepository jegyRepository;
 
@@ -45,7 +48,7 @@ public class DiakService {
             for (Diakfelvetel felvetel : diakfelvetelek) {
                 Diak diak = new Diak();
                 diak.setNev(felvetel.getNev());
-                diak.setEletkora(2024 - felvetel.getSzuletesiEve());
+                diak.setEletkora(this.TARGY_EV - felvetel.getSzuletesiEve());
                 diak.setOsztaly(felvetel.getOsztaly());
                 this.diakRepository.save(diak);
             }
@@ -53,14 +56,15 @@ public class DiakService {
     }
 
     public boolean isDiakLetezik(Long diakId) {
-        return this.diakRepository.existsById(diakId);
+        return  this.diakRepository.existsById(diakId);
     }
 
     public Jegy letrehozOsztalyzatot(JegyDto jegyDto) {
-        if(jegyDto!=null) {
+        if(jegyDto != null) {
             if ( ! this.isDiakLetezik(jegyDto.getDiakId())) {
                 throw new IllegalArgumentException("Nincs ilyen diak az adatbazisban!");
             }
+            // meppelés:
             Jegy jegy = new Jegy(jegyDto.getDiakId(), jegyDto.getTantargy(), jegyDto.getJegy());
             return this.jegyRepository.save(jegy);
         }
@@ -127,4 +131,34 @@ public class DiakService {
         // A diákok összes jegyének az összegét és darabszámát átlagoljuk:
         return sum / count;
     }   
+    
+    // példa kiegészítések az integrációs teszthez sikeres megvalósításához:
+    
+    public List<Jegy> getOsztalyJegyek(String osztaly) {
+        return this.jegyRepository.findByDiakOsztaly(osztaly);
+    }
+    
+    public Diak letrehozDiakot(Diakfelvetel diakfelvetel) {
+        Diak diak = new Diak();
+        diak.setNev(diakfelvetel.getNev());
+        diak.setEletkora(this.TARGY_EV - diakfelvetel.getSzuletesiEve());
+        diak.setOsztaly(diakfelvetel.getOsztaly());
+        return this.diakRepository.save(diak);
+    }
+    
+    public List<Diak> getOsszesDiak() {
+        return this.diakRepository.findAll();
+    }
+     
+    public List<Jegy> getOsszesJegy() {
+        return this.jegyRepository.findAll();
+    }
+     
+    public void torolDiakot(Long diakId) {
+        this.jegyRepository.deleteByDiakId(diakId);
+       // if ( ! this.jegyRepository.findByDiakId(diakId).isEmpty()) System.out.println("A diak (id = " + diakId + ") jegyei nem torlodtek!");
+
+        this.diakRepository.deleteById(diakId);
+       // if (this.diakRepository.existsById(diakId)) System.out.println("Diak (id = " + diakId + ") adatai nem torlodtek!");
+    }    
 }

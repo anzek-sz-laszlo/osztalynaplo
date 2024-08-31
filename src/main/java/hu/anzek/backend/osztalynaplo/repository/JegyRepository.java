@@ -8,6 +8,8 @@ package hu.anzek.backend.osztalynaplo.repository;
 import hu.anzek.backend.osztalynaplo.model.Jegy;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
@@ -17,7 +19,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface JegyRepository extends JpaRepository<Jegy,Long> {
-    public List<Jegy> findByDiakOsztaly(Long id,String osztaly);    
-
+    @Query("SELECT j FROM Jegy j WHERE j.diakId IN (SELECT d.id FROM Diak d WHERE d.osztaly = :osztaly)")    
+    public List<Jegy> findByDiakOsztaly(@Param("osztaly") String osztaly);    
     public List<Jegy> findByDiakId(Long id);
+    void deleteByDiakId(Long diakId);
 }

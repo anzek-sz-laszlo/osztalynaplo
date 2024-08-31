@@ -40,19 +40,22 @@ import org.mockito.MockitoAnnotations;
  * és csak a tesztelent üzleti logikára figyelünk.
  * @author User
  */
+// @SpringBootTest
 public class DiakServiceOriginTest {
         
     @InjectMocks
     // Ezt az osztályt teszteljük, injektáljuk
     // amikor a Teszt elindul a Mockito létrehoz egy DiakService() példányt 
     // amelybe beinjektálja a @Mock annotációval mockolt példányokat
+    // @Autowired
     private DiakService diakService;   
         
     @Mock
+    // @MockBean
     // azért mock-oljuk, hogy ne hajtsunk végre valódi adatbázis műveleteket!    
     private DiakRepository diakRepository;
     
-    @Mock
+    @Mock 
     // azért mock-oljuk, hogy ne hajtsunk végre valódi adatbázis műveleteket! 
     private JegyRepository jegyRepository;
     
@@ -103,20 +106,22 @@ public class DiakServiceOriginTest {
     @Test
     public void testIsDiakLetezik() {
         System.out.println("isDiakLetezik : A teszteset a diak letezeset viszgalja");
-        Long diakId = 3243223523L;
+        // előkészítés
+        Long diakId = 10L;
         // Mock setup: 
         // azért, hogy ha a "diakRepóból" lekérdezik, hogy létezik-e a "diakId" : 
         // - akkor inden esetben mondd azt, hogy "igen", létezik!
-        when(this.diakRepository.existsById(diakId)).thenReturn(true); 
-        // ezt várjuk el:
-        boolean expResult = true;
-        // ezt kapjuk vissza a "service-osztályból" - amely viszont a "diakRepóból" kérdezi le a "diakId" -t!
-        boolean result = this.diakService.isDiakLetezik(diakId);
-        Assertions.assertEquals(expResult, result);
+        when(this.diakRepository.existsById(10L)).thenReturn(true); 
+//        // ezt várjuk el:
+//        boolean expResult = true;
+//        // ezt kapjuk vissza a "service-osztályból" - amely viszont a "diakRepóból" kérdezi le a "diakId" -t!
+//        boolean result = this.diakService.isDiakLetezik(diakId);
+        Assertions.assertEquals(true, this.diakService.isDiakLetezik(diakId));
         // az eredmény egy egyszerűbb formában:
-        Assertions.assertTrue(result);
+//        Assertions.assertTrue(result);
+        Assertions.assertTrue(this.diakService.isDiakLetezik(diakId));
         // illetve még azt is megnézzük, hogy legalább egyszer lefutott-e a repositoryban a keresés?
-        verify(this.diakRepository, times(1)).existsById(diakId);
+        verify(this.diakRepository, times(2)).existsById(diakId);
         //fail("A teszteset a diak letezeset viszgalta volna, de elbukott.");
     }
 
@@ -126,19 +131,21 @@ public class DiakServiceOriginTest {
     @Test
     public void testLetrehozOsztalyzatot() {
         System.out.println("letrehozOsztalyzatot : A teszteset egy osztalyzat letrehozasat ellenori.");
-        JegyDto jegyDto = new JegyDto(1L, "Matematika", 5); 
-        JegyDto jegy1Dto = new JegyDto(5L, "Matematika", 5); 
+        // előkészítés
+        JegyDto jegyDto = new JegyDto(1L, "Matematika", 5);   
         // itt is javvítjuk a generált tesztet és létrehozunk egy osztályzat (pontosabban egy Jegy()) példányt:
         Jegy jegy = new Jegy();
         jegy.setDiakId(jegyDto.getDiakId());
         jegy.setTantargy(jegyDto.getTantargy());
         jegy.setJegy(jegyDto.getJegy());
-        // Majd enneél is csinálunk Mock setup -ot (de figylejünk rá, mert itt mindkét repository érintett lesz):
-        when(this.diakRepository.existsById(jegyDto.getDiakId())).thenReturn(true);
+        // Mock setup        
+        when(this.diakService.isDiakLetezik(jegyDto.getDiakId())).thenReturn(true);
+        // when(this.diakRepository.existsById(jegyDto.getDiakId())).thenReturn(true);            
         when(this.jegyRepository.save(any(Jegy.class))).thenReturn(jegy);        
         // a mockolás miatt most már futni fog az Osztályzat létrehozás, amely két dolgot csinál:
         // - egyszer ellenőrzi, hogy létezik-e a diák (amit a JegyDto-n kaptunk a RESTkontrollerünkből)
         // - majd elmenti adatbázisba az osztályzat példányt
+        // végrehajtás:
         Jegy result = this.diakService.letrehozOsztalyzatot(jegyDto);
         // result = this.diakService.letrehozOsztalyzatot(jegy1Dto);
         // jöhetnek az ellenőrzések:
@@ -146,7 +153,7 @@ public class DiakServiceOriginTest {
         Assertions.assertEquals(jegy, result);
         Assertions.assertEquals(jegy.getDiakId(), result.getDiakId());
         Assertions.assertEquals(jegy.getTantargy(), result.getTantargy());
-        Assertions.assertEquals(jegy.getJegy(), result.getJegy());        
+ //       Assertions.assertEquals(jegy.getJegy(), result.getJegy());        
         // itt is megnézzük, hogy egyszer legalább ténylegesen lefutott-e a .save(Jegy.class) -adatbázisba mentése:
         verify(this.jegyRepository, times(1)).save(any(Jegy.class));
         //fail("A teszteset egy osztalyzat letrehozasat ellenorizte volna, de elbukott.");

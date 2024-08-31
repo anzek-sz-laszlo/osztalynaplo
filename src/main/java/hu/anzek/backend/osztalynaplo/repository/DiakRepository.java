@@ -17,8 +17,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DiakRepository extends JpaRepository<Diak,Long> {
-
-
-    public List<Diak> findByOsztaly(String osztaly);
-    
+    public List<Diak> findByOsztaly(String osztaly);  
+    Diak findByNev(String nev);
 }
